@@ -3,6 +3,8 @@ terminator-grep-plugin
 
 Terminator plugin to open grep output using a chosen editor
 
+See the demo at https://github.com/mchelem/terminator-grep-plugin/wiki.
+
 ### Installing the plugin
 - Find out what is your terminatorlib directory (you can use <code>python -c "import terminatorlib; print terminatorlib.\_\_file\_\_"</code>)
 - Copy the plugin file to your Terminator plugins directory &lt;terminatorlib dir&gt;/plugins/

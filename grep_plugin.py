@@ -67,10 +67,10 @@ class GrepPlugin(plugin.URLHandler):
             '+' + line_number,
             file_url, 
         ]
-        options = self.config.plugin_get(self.plugin_name, 'options')
-        options = options.split()
-        for option in options:
-            args.insert(1, option)
+
+        # insert options
+        options = self.config.plugin_get(self.plugin_name, 'options').split()
+        args = args[:1] + options + args[1:]
 
         subprocess.call(args)
         
@@ -87,8 +87,12 @@ class GrepPlugin(plugin.URLHandler):
 
         if self.is_called_by_open():
             self.open_file(url, line_number)
-            # Skip calling 'xdg-open' on the url
+            # Hack to skip calling 'xdg-open' on the url
             return '--version'
         
-        return self.config.plugin_get(self.plugin_name, 'editor') + ' ' + url + ' +' + line_number
+        return '{} {} +{}'.format(
+            self.config.plugin_get(self.plugin_name, 'editor'),
+            url,
+            line_number,
+        )
 

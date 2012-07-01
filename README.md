@@ -24,7 +24,7 @@ by editing Terminator's configuration file. Normally, the configs are stored at 
 
 * Open the config file, find GrepPugin. You can configure the editor and the editor options.
   * Editor: An editor that accepts the +line_number syntax
-  * Options: When using vim --remote, it must be the first option
+  * Options: When using vim --remote, it must be the last option
 
 #### Examples
 
@@ -38,7 +38,7 @@ Vim with tabs (vim only works with the -g option)
 
     [[GrepPlugin]]  
     editor = vim    
-    options = --remote-tab -g
+    options = -g --remote-tab
 
 Gedit
 

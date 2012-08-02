@@ -18,7 +18,7 @@ class GrepPlugin(plugin.URLHandler):
     handler_name = 'grepurl'
     nameopen = "Open in editor"
     namecopy = "Copy editor URL"
-    match = '^[^ \t\n\r\f\v:]+?[:]([0-9]+?[:])?'
+    match = '[^ \t\n\r\f\v:]+?[:]([0-9]+?[:])?'
 
 
     def __init__(self):

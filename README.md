@@ -22,7 +22,7 @@ See the demo at https://github.com/mchelem/terminator-grep-plugin/wiki.
 
 ### Editing the configuration file
 By default, the plugin uses gvim. You can choose another editor, as long as it supports the +line_number syntax, 
-by editing Terminator's configuration file. Normally, the configs are stored at /home/&lt;myuser&gt;/.config/terminator/config
+by editing Terminator's configuration file. Normally, the configs are stored at <code>/home/&lt;myuser&gt;/.config/terminator/config</code>
 
 * Open the config file, find GrepPugin. You can configure the editor and the editor options.
   * Editor: An editor that accepts the +line_number syntax
@@ -33,17 +33,23 @@ by editing Terminator's configuration file. Normally, the configs are stored at 
 GVim (default)
 
     [[GrepPlugin]]  
-    editor = gvim    
-    options = --remote-silent 
+    editor = gvim
+    openurl = {editor} --remote-silent {filepath} +{line}
 
 Vim with tabs (vim only works with the -g option)
 
     [[GrepPlugin]]  
     editor = vim    
-    options = -g --remote-tab
+    options = {editor} -g --remote-tab {filepath} +{line}
 
 Gedit
 
     [[GrepPlugin]]  
     editor = gedit    
-    options =  
+    options = 
+
+Sublime
+
+    [[GrepPlugin]]  
+    editor = sublime
+    options = {editor} {filepath}:{line}

@@ -40,16 +40,16 @@ Vim with tabs (vim only works with the -g option)
 
     [[GrepPlugin]]  
     editor = vim    
-    options = {editor} -g --remote-tab {filepath} +{line}
+    openurl = {editor} -g --remote-tab {filepath} +{line}
 
 Gedit
 
     [[GrepPlugin]]  
     editor = gedit    
-    options = 
+    openurl = 
 
 Sublime
 
     [[GrepPlugin]]  
     editor = sublime
-    options = {editor} {filepath}:{line}
+    openurl = {editor} {filepath}:{line}

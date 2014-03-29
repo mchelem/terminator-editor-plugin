@@ -39,22 +39,20 @@ class GrepPlugin(plugin.URLHandler):
         return inspect.stack()[3][3] == "open_url"
     
     def callback(self, filepath):
-        with open('/tmp/foobar.txt', 'a') as handle:
-            # Cleanup the Filepath
-            filepath = filepath[:-1]
-            if ':' in filepath:
-                filepath,line = filepath.split(':')
-            if self.current_path:
-                filepath = os.path.join(self.current_path, filepath)
-            handle.write("filepath: %s\n" % filepath)
-            # Generate the openurl string
-            editor = self.config.plugin_get(self.plugin_name, 'editor')
-            openurl = self.config.plugin_get(self.plugin_name, 'openurl')
-            openurl = openurl.replace('{editor}', editor)
-            openurl = openurl.replace('{filepath}', filepath)
-            openurl = openurl.replace('{line}', line)
-            # Check we are opening the file
-            if self.is_called_by_open():
-                subprocess.call(shlex.split(openurl))
-                return '--version'
-            return openurl
+        # Cleanup the Filepath
+        filepath = filepath[:-1]
+        if ':' in filepath:
+            filepath,line = filepath.split(':')
+        if self.current_path:
+            filepath = os.path.join(self.current_path, filepath)
+        # Generate the openurl string
+        editor = self.config.plugin_get(self.plugin_name, 'editor')
+        openurl = self.config.plugin_get(self.plugin_name, 'openurl')
+        openurl = openurl.replace('{editor}', editor)
+        openurl = openurl.replace('{filepath}', filepath)
+        openurl = openurl.replace('{line}', line)
+        # Check we are opening the file
+        if self.is_called_by_open():
+            subprocess.call(shlex.split(openurl))
+            return '--version'
+        return openurl

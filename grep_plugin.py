@@ -49,6 +49,7 @@ class GrepPlugin(plugin.URLHandler):
     def callback(self, filepath):
         # Cleanup the Filepath
         filepath = filepath[:-1]
+        line = 0
         if ':' in filepath:
             filepath,line = filepath.split(':')
         current_path = self.get_current_path()

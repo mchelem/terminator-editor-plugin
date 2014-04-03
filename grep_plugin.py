@@ -17,9 +17,9 @@ class GrepPlugin(plugin.URLHandler):
     """ Process URLs returned by the grep command. """
     capabilities = ['url_handler']
     handler_name = 'grepurl'
-    nameopen = "Open File"
-    namecopy = "Copy Open Command"
-    match = r'[^ \t\n\r\f\v]+?[:]([0-9]+?[:])+'
+    nameopen = 'Open File'
+    namecopy = 'Copy Open Command'
+    match = '[^ \t\n\r\f\v:]+?:[0-9]+'
 
     def __init__(self):
         self.plugin_name = self.__class__.__name__

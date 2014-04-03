@@ -10,7 +10,7 @@ from terminatorlib import plugin
 from terminatorlib import config
 
 AVAILABLE = ['GrepPlugin']
-DEFAULT_COMMAND = 'gvim --remote-silent {filepath} +{line}'
+DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
 
 
 class GrepPlugin(plugin.URLHandler):
@@ -19,48 +19,45 @@ class GrepPlugin(plugin.URLHandler):
     handler_name = 'grepurl'
     nameopen = "Open File"
     namecopy = "Copy Open Command"
-    match = '[^ \t\n\r\f\v]+?[:]([0-9]+?[:])+'
+    match = r'[^ \t\n\r\f\v]+?[:]([0-9]+?[:])+'
 
     def __init__(self):
-       self.plugin_name = self.__class__.__name__
-       self.current_path = None
-       self.config = config.Config()
-       current_config = self.config.plugin_get_config(self.plugin_name)
-       # Setup default options
-       if not current_config:
-          self.config.plugin_set(self.plugin_name, 'command', DEFAULT_COMMAND)
-          self.config.save()
+        self.plugin_name = self.__class__.__name__
+        self.current_path = None
+        self.config = config.Config()
+        settings = self.config.plugin_get_config(self.plugin_name)
+        if not settings or 'command' not in settings:
+            settings = {'command': DEFAULT_COMMAND}
+            self.config.plugin_set_config(self.plugin_name, settings)
+            self.config.save()
 
-    def get_current_path(self):
-        """ HACK 1: Use inspect to get the Terminal object and get_cwd(). """
+    def get_cwd(self):
+        """ Return current working directory. """
+        # HACK: Because the current working directory is not available to plugins,
+        # we need to use the inspect module to climb up the stack to the Terminal
+        # object and call get_cwd() from there.
         for frameinfo in inspect.stack():
             frameobj = frameinfo[0].f_locals.get('self')
             if frameobj and frameobj.__class__.__name__ == 'Terminal':
                 return frameobj.get_cwd()
         return None
 
-    def is_called_by_open(self):
-        """ HACK 2: Use inspect to check we are called via open_url(). """
-        for frameinfo in inspect.stack():
-            if frameinfo[3] == 'open_url':
-                return True
-        return False
+    def open_url(self):
+        """ Return True if we should open the file. """
+        # HACK: Because the plugin doesn't tell us we should open or copy
+        # the command, we need to climb the stack to see how we got here.
+        return inspect.stack()[3][3] == 'open_url'
 
-    def callback(self, filepath):
-        # Cleanup the Filepath
-        filepath = filepath[:-1]
-        line = 0
-        if ':' in filepath:
-            filepath,line = filepath.split(':')
-        current_path = self.get_current_path()
-        if current_path:
-            filepath = os.path.join(current_path, filepath)
+    def callback(self, strmatch):
+        strmatch = strmatch.strip(':')
+        filepath = os.path.join(self.get_cwd(), strmatch.split(':')[0])
+        lineno = strmatch.split(':')[1] if ':' in strmatch else 0
         # Generate the openurl string
         command = self.config.plugin_get(self.plugin_name, 'command')
         command = command.replace('{filepath}', filepath)
-        command = command.replace('{line}', line)
+        command = command.replace('{line}', lineno)
         # Check we are opening the file
-        if self.is_called_by_open():
+        if self.open_url():
             subprocess.call(shlex.split(command))
             return '--version'
         return command

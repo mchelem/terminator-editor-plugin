@@ -1,98 +1,63 @@
-# michele.silva@gmail.com
-# GPL v2
-
-""" Terminator plugin to open grep output using a chosen editor. 
-Currently supports gvim and gedit.
 """
-import re
-import terminatorlib.plugin as plugin
-import terminatorlib.config as config
+Terminator plugin to open grep output using a chosen editor. 
+Currently supports gvim and gedit.
 
-# Every plugin you want Terminator to load *must* be listed in 'AVAILABLE'
+Author: michele.silva@gmail.com
+License: GPLv2
+"""
+import inspect, os, shlex, subprocess
+from terminatorlib import plugin
+from terminatorlib import config
+
 AVAILABLE = ['GrepPlugin']
+DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
+
 
 class GrepPlugin(plugin.URLHandler):
-    """Process URLs returned by the grep command."""
-
+    """ Process URLs returned by the grep command. """
     capabilities = ['url_handler']
     handler_name = 'grepurl'
-    nameopen = "Open in editor"
-    namecopy = "Copy editor URL"
-    match = '[^ \t\n\r\f\v:]+?[:]([0-9]+?[:])?'
-
+    nameopen = 'Open File'
+    namecopy = 'Copy Open Command'
+    match = '[^ \t\n\r\f\v:]+?:[0-9]+'
 
     def __init__(self):
-       self.plugin_name = self.__class__.__name__
-       self.current_path = None
-       self.config = config.Config()
-       current_config = self.config.plugin_get_config(self.plugin_name)
+        self.plugin_name = self.__class__.__name__
+        self.current_path = None
+        self.config = config.Config()
+        settings = self.config.plugin_get_config(self.plugin_name)
+        if not settings or 'command' not in settings:
+            settings = {'command': DEFAULT_COMMAND}
+            self.config.plugin_set_config(self.plugin_name, settings)
+            self.config.save()
 
-       # Default editor
-       if not current_config:
-          self.config.plugin_set(self.plugin_name, 'editor', 'gvim')
-          self.config.plugin_set(
-             self.plugin_name, 'options', "--remote-silent") 
-          self.config.save()
+    def get_cwd(self):
+        """ Return current working directory. """
+        # HACK: Because the current working directory is not available to plugins,
+        # we need to use the inspect module to climb up the stack to the Terminal
+        # object and call get_cwd() from there.
+        for frameinfo in inspect.stack():
+            frameobj = frameinfo[0].f_locals.get('self')
+            if frameobj and frameobj.__class__.__name__ == 'Terminal':
+                return frameobj.get_cwd()
+        return None
 
+    def open_url(self):
+        """ Return True if we should open the file. """
+        # HACK: Because the plugin doesn't tell us we should open or copy
+        # the command, we need to climb the stack to see how we got here.
+        return inspect.stack()[3][3] == 'open_url'
 
-    def set_editor(self, editor):
-        """Set the path to the editor used to open the file.
-        """
-        self.config.plugin_set(self.plugin_name, 'editor', editor)
-        config.save()
-
-
-    def is_called_by_open(self):
-        """A hack to check if it is being called by the open_url function. 
-
-        WARNING: inspection should be used in logging and debugging.
-        It is being used here because Terminator does not support 
-        plugins' custom url handlers."""
-        import inspect
-        # open_url (3) -> prepare_url (2) -> callback (1)
-        return inspect.stack()[3][3] == "open_url"
-
-
-    def open_file(self, file_url, line_number):
-        """Open the file using the current editor.
-        """
-        import os
-        import subprocess
-
-        if self.current_path:
-            file_url = os.path.join(self.current_path, file_url)
-
-        args = [
-            self.config.plugin_get(self.plugin_name, 'editor'), 
-            '+' + line_number,
-            file_url, 
-        ]
-
-        # insert options
-        options = self.config.plugin_get(self.plugin_name, 'options').split()
-        args = args[:1] + options + args[1:]
-
-        subprocess.call(args)
-        
-    
-    def callback(self, url):
-        """Replace :line_number by +line_number."""
-       
-        # vte returns the full string, so we must remove the :
-        url = url[:-1]
-        if ':' in url:
-            url, line_number = url.split(':')
-        else:
-            line_number = '0'
-
-        if self.is_called_by_open():
-            self.open_file(url, line_number)
-            # Hack to skip calling 'xdg-open' on the url
+    def callback(self, strmatch):
+        strmatch = strmatch.strip(':')
+        filepath = os.path.join(self.get_cwd(), strmatch.split(':')[0])
+        lineno = strmatch.split(':')[1] if ':' in strmatch else 0
+        # Generate the openurl string
+        command = self.config.plugin_get(self.plugin_name, 'command')
+        command = command.replace('{filepath}', filepath)
+        command = command.replace('{line}', lineno)
+        # Check we are opening the file
+        if self.open_url():
+            subprocess.call(shlex.split(command))
             return '--version'
-        
-        return '{} {} +{}'.format(
-            self.config.plugin_get(self.plugin_name, 'editor'),
-            url,
-            line_number,
-        )
-
+        return command

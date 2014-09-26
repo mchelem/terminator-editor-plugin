@@ -69,18 +69,10 @@ class GrepPlugin(plugin.URLHandler):
         strmatch = strmatch.strip(':').strip()
         filepath = os.path.join(self.get_cwd(), strmatch.split(':')[0])
         lineno = strmatch.split(':')[1] if ':' in strmatch else '1'
-        with open('/tmp/logs.log', 'a') as handle:
-            handle.write('---\n')
-            handle.write('strmatch: %s\n' % strmatch)
-            handle.write('filepath: %s\n' % filepath)
-            handle.write('lineno: %s\n' % lineno)
-            # Generate the openurl string
-            command = self.config.plugin_get(self.plugin_name, 'command')
-            handle.write('command: %s\n' % command)
-            command = command.replace('{filepath}', filepath)
-            handle.write('command: %s\n' % command)
-            command = command.replace('{line}', lineno)
-            handle.write('command: %s\n' % command)
+        # Generate the openurl string
+        command = self.config.plugin_get(self.plugin_name, 'command')
+        command = command.replace('{filepath}', filepath)
+        command = command.replace('{line}', lineno)
         # Check we are opening the file
         if self.open_url():
             subprocess.call(shlex.split(command))

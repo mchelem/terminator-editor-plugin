@@ -75,6 +75,7 @@ class GrepPlugin(plugin.URLHandler):
         command = command.replace('{line}', lineno)
         # Check we are opening the file
         if self.open_url():
-            subprocess.call(shlex.split(command))
+            if os.path.exists(filepath):
+                subprocess.call(shlex.split(command))
             return '--version'
         return command

@@ -11,6 +11,8 @@ from terminatorlib import config
 
 AVAILABLE = ['GrepPlugin']
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
+DEFAULT_REGEX = '[^ \\t\\n\\r\\f\\v:]+?:[0-9]+'
+REPLACE = {'\\t':'\t', '\\n':'\n', '\\r':'\r', '\\f':'\f', '\\v':'\v'}
 
 
 class GrepPlugin(plugin.URLHandler):
@@ -19,16 +21,31 @@ class GrepPlugin(plugin.URLHandler):
     handler_name = 'grepurl'
     nameopen = 'Open File'
     namecopy = 'Copy Open Command'
-    match = '[^ \t\n\r\f\v:]+?:[0-9]+'
+    match = None
 
     def __init__(self):
         self.plugin_name = self.__class__.__name__
         self.current_path = None
         self.config = config.Config()
-        settings = self.config.plugin_get_config(self.plugin_name)
-        if not settings or 'command' not in settings:
-            settings = {'command': DEFAULT_COMMAND}
-            self.config.plugin_set_config(self.plugin_name, settings)
+        self.check_config()
+        self.match = self.config.plugin_get(self.plugin_name, 'match')
+        for key,val in REPLACE.iteritems():
+            self.match = self.match.replace(key, val)
+
+    def check_config(self):
+        updated = False
+        config = self.config.plugin_get_config(self.plugin_name)
+        if not config:
+            config = {}
+            updated = True
+        if 'command' not in config:
+            config['command'] = DEFAULT_COMMAND
+            updated = True
+        if 'match' not in config:
+            config['match'] = DEFAULT_REGEX
+            updated = True
+        if updated:
+            self.config.plugin_set_config(self.plugin_name, config)
             self.config.save()
 
     def get_cwd(self):
@@ -49,9 +66,9 @@ class GrepPlugin(plugin.URLHandler):
         return inspect.stack()[3][3] == 'open_url'
 
     def callback(self, strmatch):
-        strmatch = strmatch.strip(':')
+        strmatch = strmatch.strip(':').strip()
         filepath = os.path.join(self.get_cwd(), strmatch.split(':')[0])
-        lineno = strmatch.split(':')[1] if ':' in strmatch else 0
+        lineno = strmatch.split(':')[1] if ':' in strmatch else '1'
         # Generate the openurl string
         command = self.config.plugin_get(self.plugin_name, 'command')
         command = command.replace('{filepath}', filepath)

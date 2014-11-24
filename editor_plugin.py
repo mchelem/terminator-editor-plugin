@@ -1,6 +1,5 @@
 """
-Terminator plugin to open grep output using a chosen editor. 
-Currently supports gvim and gedit.
+Terminator plugin to open a file using a chosen editor.
 
 Author: michele.silva@gmail.com
 License: GPLv2
@@ -9,16 +8,16 @@ import inspect, os, shlex, subprocess
 from terminatorlib import plugin
 from terminatorlib import config
 
-AVAILABLE = ['GrepPlugin']
+AVAILABLE = ['EditorPlugin']
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
 DEFAULT_REGEX = '[^ \\t\\n\\r\\f\\v:]+?:[0-9]+'
 REPLACE = {'\\t':'\t', '\\n':'\n', '\\r':'\r', '\\f':'\f', '\\v':'\v'}
 
 
-class GrepPlugin(plugin.URLHandler):
-    """ Process URLs returned by the grep command. """
+class EditorPlugin(plugin.URLHandler):
+    """ Process URLs returned by commands. """
     capabilities = ['url_handler']
-    handler_name = 'grepurl'
+    handler_name = 'editorurl'
     nameopen = 'Open File'
     namecopy = 'Copy Open Command'
     match = None

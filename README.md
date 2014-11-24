@@ -1,12 +1,13 @@
-Terminator Grep Plugin
+Terminator Editor Plugin
 ----------------------
-Terminator plugin to open grep output using a chosen editor
-See the demo at https://github.com/mchelem/terminator-grep-plugin/wiki.
+Terminator plugin to open a file uri, including line number, in an editor. 
+When the configured regex is matched, you can click the link and open the file in a previously configured editor.
+See the demo at https://github.com/mchelem/terminator-editor-plugin/wiki.
 
 
 ### Installing the Plugin ###
 * Copy the plugin file to `~/.config/terminator/plugins`.
-* In Terminator go to Preferences >> Plugins and enable GrepPlugin.
+* In Terminator go to Preferences >> Plugins and enable EditorPlugin.
 * Restart Terminator.
 
 
@@ -18,7 +19,7 @@ See the demo at https://github.com/mchelem/terminator-grep-plugin/wiki.
 
 ### Configuration ###
 The configuration file is located at `~/.config/terminator/config`. Update
-the command under the `[[GrepPlugin]]` section to suit your needs. A few
+the command under the `[[EditorPlugin]]` section to suit your needs. A few
 examples are below:
 
     command = gvim --remote-silent +{line} {filepath} 
@@ -34,3 +35,4 @@ specific file types with or without a line number specified:
 
     match = [^ \t\n\r\f\v:]+?:[0-9]+
     match = [^ \t\n\r\f\v:]+?\.(html|py|css|js|txt|xml|json)[ \n:]([0-9]+)*
+

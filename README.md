@@ -25,6 +25,7 @@ examples are below:
     command = vim -g --remote-tab +{line} {filepath} 
     command = gedit +{line} {filepath} 
     command = sublime {filepath}:{line}
+    command = emacsclient -n +{line} {filepath}
 
 You can specify the regex to match filenames to your liking. By default the
 first example below is used. It will match all file paths with a specified

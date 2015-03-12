@@ -4,9 +4,8 @@ Terminator plugin to open a file using a chosen editor.
 Author: michele.silva@gmail.com
 License: GPLv2
 """
-import inspect, os, shlex, subprocess
-from terminatorlib import plugin
-from terminatorlib import config
+import inspect, os, re, shlex, subprocess
+from terminatorlib import plugin, config
 
 AVAILABLE = ['EditorPlugin']
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
@@ -65,16 +64,30 @@ class EditorPlugin(plugin.URLHandler):
         return inspect.stack()[3][3] == 'open_url'
 
     def callback(self, strmatch):
-        strmatch = strmatch.strip(':').strip()
-        filepath = os.path.join(self.get_cwd(), strmatch.split(':')[0])
-        lineno = strmatch.split(':')[1] if ':' in strmatch else '1'
+        config = self.config.plugin_get_config(self.plugin_name)
+        match = re.match(config['match'], strmatch)
+        groups = [group for group in match.groups() if group is not None]
+        lineno = '1'
+        filepath = None
+        # Iterate trough match groups in order to find file and lineno if any
+        for item in groups:
+            fileitem = os.path.join(self.get_cwd(), item)
+            if os.path.exists(fileitem):
+                filepath = fileitem
+                continue
+            try:
+                int(item)
+            except ValueError:
+                pass
+            else:
+                lineno = item
         # Generate the openurl string
         command = self.config.plugin_get(self.plugin_name, 'command')
         command = command.replace('{filepath}', filepath)
         command = command.replace('{line}', lineno)
         # Check we are opening the file
         if self.open_url():
-            if os.path.exists(filepath):
+            if filepath:
                 subprocess.call(shlex.split(command))
             return '--version'
         return command

@@ -4,7 +4,11 @@ Terminator plugin to open a file using a chosen editor.
 Author: michele.silva@gmail.com
 License: GPLv2
 """
-import inspect, os, re, shlex, subprocess
+import inspect
+import os
+import re
+import shlex
+import subprocess
 from terminatorlib import plugin, config
 
 AVAILABLE = ['EditorPlugin']
@@ -46,9 +50,9 @@ class EditorPlugin(plugin.URLHandler):
 
     def get_cwd(self):
         """ Return current working directory. """
-        # HACK: Because the current working directory is not available to plugins,
-        # we need to use the inspect module to climb up the stack to the Terminal
-        # object and call get_cwd() from there.
+        # HACK: Because the current working directory is not available to
+        # plugins, we need to use the inspect module to climb up the stack to
+        # the Terminal object and call get_cwd() from there.
         for frameinfo in inspect.stack():
             frameobj = frameinfo[0].f_locals.get('self')
             if frameobj and frameobj.__class__.__name__ == 'Terminal':

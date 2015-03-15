@@ -9,8 +9,7 @@ from terminatorlib import plugin, config
 
 AVAILABLE = ['EditorPlugin']
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
-DEFAULT_REGEX = '([^ \\t\\n\\r\\f\\v:]+?):([0-9]+)'
-REPLACE = {'\\t':'\t', '\\n':'\n', '\\r':'\r', '\\f':'\f', '\\v':'\v'}
+DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
 
 
 class EditorPlugin(plugin.URLHandler):
@@ -27,8 +26,7 @@ class EditorPlugin(plugin.URLHandler):
         self.config = config.Config()
         self.check_config()
         self.match = self.config.plugin_get(self.plugin_name, 'match')
-        for key,val in REPLACE.iteritems():
-            self.match = self.match.replace(key, val)
+        self.match = self.match.decode('string_escape')
 
     def check_config(self):
         updated = False

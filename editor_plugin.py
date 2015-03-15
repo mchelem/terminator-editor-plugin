@@ -69,7 +69,7 @@ class EditorPlugin(plugin.URLHandler):
         groups = [group for group in match.groups() if group is not None]
         lineno = '1'
         filepath = None
-        # Iterate trough match groups in order to find file and lineno if any
+        # Iterate through match groups in order to find file and lineno if any
         for item in groups:
             fileitem = os.path.join(self.get_cwd(), item)
             if os.path.exists(fileitem):

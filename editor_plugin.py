@@ -9,7 +9,7 @@ from terminatorlib import plugin, config
 
 AVAILABLE = ['EditorPlugin']
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
-DEFAULT_REGEX = '[^ \\t\\n\\r\\f\\v:]+?:[0-9]+'
+DEFAULT_REGEX = '([^ \\t\\n\\r\\f\\v:]+?):([0-9]+)'
 REPLACE = {'\\t':'\t', '\\n':'\n', '\\r':'\r', '\\f':'\f', '\\v':'\v'}
 
 

@@ -34,5 +34,5 @@ line number (ex: some/file/path.txt:12). The second example below can match
 specific file types with or without a line number specified:
 
     match = ([^ \t\n\r\f\v:]+?):([0-9]+)
-    match = [^ \t\n\r\f\v:]+?\.(html|py|css|js|txt|xml|json)[ \n:]([0-9]+)*
+    match = ([^ \t\n\r\f\v:]+?\.(html|py|css|js|txt|xml|json))[ \n:](([0-9]+)*)
 

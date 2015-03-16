@@ -42,7 +42,7 @@ Specific file types with or without a line number specified:
 
 File paths with or without line numbers and Python stack traces:
 
-```([^ \t\n\r\f\v:"]+[\.\/][^ \t\n\r\f\v:"]+)?(". line |:)([0-9]+)* ```
+```match = ([^ \t\n\r\f\v:"]+[\.\/][^ \t\n\r\f\v:"]+)?(". line |:)([0-9]+)* ```
 
 Warning: Inside terminator the regexes are split by comma, so be careful not to include the ',' character in your regex.
 

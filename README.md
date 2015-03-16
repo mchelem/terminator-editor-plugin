@@ -28,11 +28,21 @@ examples are below:
     command = sublime {filepath}:{line}
     command = emacsclient -n +{line} {filepath}
 
-You can specify the regex to match filenames to your liking. By default the
-first example below is used. It will match all file paths with a specified
-line number (ex: some/file/path.txt:12). The second example below can match
-specific file types with or without a line number specified:
+You can specify the regex to match filenames to your liking.
 
-    match = ([^ \t\n\r\f\v:]+?):([0-9]+)
-    match = ([^ \t\n\r\f\v:]+?\.(html|py|css|js|txt|xml|json))[ \n:](([0-9]+)*)
+#### Regex examples
+
+File paths with a specified line number (ex: some/file/path.txt:12) **(default)**:
+
+```match = ([^ \t\n\r\f\v:]+?):([0-9]+)```
+
+Specific file types with or without a line number specified:
+
+```match = ([^ \t\n\r\f\v:]+?\.(html|py|css|js|txt|xml|json))[ \n:](([0-9]+)*)```
+
+File paths with or without line numbers and Python stack traces:
+
+```([^ \t\n\r\f\v:"]+[\.\/][^ \t\n\r\f\v:"]+)?(". line |:)([0-9]+)* ```
+
+Warning: Inside terminator the regexes are split by comma, so be careful not to include the ',' character in your regex.
 

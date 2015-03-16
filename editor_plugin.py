@@ -31,20 +31,14 @@ class EditorPlugin(plugin.URLHandler):
         self.match = self.match.decode('string_escape')
 
     def check_config(self):
-        updated = False
-        config = self.config.plugin_get_config(self.plugin_name)
-        if not config:
-            config = {}
-            updated = True
-        if 'command' not in config:
-            config['command'] = DEFAULT_COMMAND
-            updated = True
-        if 'match' not in config:
-            config['match'] = DEFAULT_REGEX
-            updated = True
-        if updated:
-            self.config.plugin_set_config(self.plugin_name, config)
-            self.config.save()
+        config = {
+            'command': DEFAULT_COMMAND,
+            'match': DEFAULT_REGEX,
+        }
+        saved_config = self.config.plugin_get_config(self.plugin_name)
+        config.update(saved_config)
+        self.config.plugin_set_config(self.plugin_name, config)
+        self.config.save()
 
     def get_cwd(self):
         """ Return current working directory. """
@@ -63,7 +57,7 @@ class EditorPlugin(plugin.URLHandler):
         # the command, we need to climb the stack to see how we got here.
         return inspect.stack()[3][3] == 'open_url'
 
-    def callback(self, strmatch):
+    def get_filepath(self, strmatch):
         config = self.config.plugin_get_config(self.plugin_name)
         match = re.match(config['match'], strmatch)
         groups = [group for group in match.groups() if group is not None]
@@ -81,6 +75,10 @@ class EditorPlugin(plugin.URLHandler):
                 pass
             else:
                 lineno = item
+        return filepath, lineno
+
+    def callback(self, strmatch):
+        filepath, lineno = self.get_filepath(strmatch)
         # Generate the openurl string
         command = self.config.plugin_get(self.plugin_name, 'command')
         command = command.replace('{filepath}', filepath)

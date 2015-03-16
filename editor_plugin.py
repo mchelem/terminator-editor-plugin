@@ -22,11 +22,9 @@ class EditorPlugin(plugin.URLHandler):
     handler_name = 'editorurl'
     nameopen = 'Open File'
     namecopy = 'Copy Open Command'
-    match = None
 
     def __init__(self):
         self.plugin_name = self.__class__.__name__
-        self.current_path = None
         self.config = config.Config()
         self.check_config()
         self.match = self.config.plugin_get(self.plugin_name, 'match')

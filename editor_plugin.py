@@ -32,10 +32,10 @@ class EditorPlugin(plugin.URLHandler):
         self.match = self.match.decode('string_escape')
 
     def check_config(self):
-        try:
-            saved_config = self.config.plugin_get_config(self.plugin_name)
+        saved_config = self.config.plugin_get_config(self.plugin_name)
+        if saved_config != None:
             config.update(saved_config)
-        except TypeError:
+        else:
             config = {
                 'command': DEFAULT_COMMAND,
                 'match': DEFAULT_REGEX,

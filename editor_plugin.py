@@ -32,16 +32,15 @@ class EditorPlugin(plugin.URLHandler):
         self.match = self.match.decode('string_escape')
 
     def check_config(self):
+        config = {
+            'command': DEFAULT_COMMAND,
+            'match': DEFAULT_REGEX,
+        }
         saved_config = self.config.plugin_get_config(self.plugin_name)
         if saved_config != None:
             config.update(saved_config)
-        else:
-            config = {
-                'command': DEFAULT_COMMAND,
-                'match': DEFAULT_REGEX,
-            }
-            self.config.plugin_set_config(self.plugin_name, config)
-            self.config.save()
+        self.config.plugin_set_config(self.plugin_name, config)
+        self.config.save()
 
     def get_cwd(self):
         """ Return current working directory. """

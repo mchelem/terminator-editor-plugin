@@ -6,7 +6,8 @@ See the demo at https://github.com/mchelem/terminator-editor-plugin/wiki.
 
 
 ### Installing the Plugin ###
-* Copy the plugin file to `~/.config/terminator/plugins`.
+* Create the plugins folder if it doesn't exist. On linux: `mkdir -p ~/.config/terminator/plugins`
+* Copy the plugin file to the plugins folder.
 * In Terminator go to Preferences >> Plugins and enable EditorPlugin.
 * Restart Terminator.
 

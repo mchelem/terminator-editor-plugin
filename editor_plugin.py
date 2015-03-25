@@ -3,6 +3,7 @@ Terminator plugin to open a file using a chosen editor.
 
 Author: michele.silva@gmail.com
 License: GPLv2
+Site: https://github.com/mchelem/terminator-editor-plugin
 """
 import inspect
 import os

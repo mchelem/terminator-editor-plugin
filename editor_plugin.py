@@ -37,7 +37,7 @@ class EditorPlugin(plugin.URLHandler):
             'match': DEFAULT_REGEX,
         }
         saved_config = self.config.plugin_get_config(self.plugin_name)
-        if saved_config != None:
+        if saved_config is not None:
             config.update(saved_config)
         self.config.plugin_set_config(self.plugin_name, config)
         self.config.save()

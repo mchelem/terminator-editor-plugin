@@ -24,18 +24,30 @@ the command under the `[[EditorPlugin]]` section to suit your needs. A few
 examples are below:
 
     command = gvim --remote-silent +{line} {filepath} 
-    command = vim -g --remote-tab +{line} {filepath} 
+    command = "gvim --remote-silent +"call cursor({line}, {column})" {filepath}"
+
     command = gedit +{line} {filepath} 
+
     command = sublime {filepath}:{line}
+
     command = emacsclient -n +{line} {filepath}
 
 You can specify the regex to match filenames to your liking.
 
 #### Regex examples
 
+The inputs to the editor may be specified using the groups parameter. By default the first group matched is the filename and the second is the line number (groups = "file line").
+
 File paths with a specified line number (ex: some/file/path.txt:12) **(default)**:
 
 ```match = ([^ \t\n\r\f\v:]+?):([0-9]+)```
+
+File paths followed by line number and column:
+
+```
+match = "([^ \t\n\r\f\v:]+?):([0-9]+):([0-9]+)"
+groups = "file line column"
+```
 
 Specific file types with or without a line number specified:
 
@@ -43,7 +55,10 @@ Specific file types with or without a line number specified:
 
 File paths with or without line numbers and Python stack traces:
 
-```match = ([^ \t\n\r\f\v:"]+[\.\/][^ \t\n\r\f\v:"]+)?(". line |:)([0-9]+)* ```
+```
+match = ([^ \t\n\r\f\v:"]+[\.\/][^ \t\n\r\f\v:"]+)?(". line |:)([0-9]+)*
+groups = "file separator line"
+```
 
-Warning: Inside terminator the regexes are split by comma, so be careful not to include the ',' character in your regex.
+Warning: Use quotes in your parameters if you want to include a comma.
 

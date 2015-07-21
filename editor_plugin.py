@@ -13,8 +13,10 @@ import subprocess
 from terminatorlib import plugin, config
 
 AVAILABLE = ['EditorPlugin']
+
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
 DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
+DEFAULT_GROUPS = 'file line'
 
 
 class EditorPlugin(plugin.URLHandler):
@@ -35,6 +37,7 @@ class EditorPlugin(plugin.URLHandler):
         config = {
             'command': DEFAULT_COMMAND,
             'match': DEFAULT_REGEX,
+            'groups': DEFAULT_GROUPS,
         }
         saved_config = self.config.plugin_get_config(self.plugin_name)
         if saved_config is not None:
@@ -60,34 +63,33 @@ class EditorPlugin(plugin.URLHandler):
         return inspect.stack()[3][3] == 'open_url'
 
     def get_filepath(self, strmatch):
+        filepath = None
+        line = column = '1'
+
         config = self.config.plugin_get_config(self.plugin_name)
         match = re.match(config['match'], strmatch)
         groups = [group for group in match.groups() if group is not None]
-        lineno = '1'
-        filepath = None
-        # Iterate through match groups in order to find file and lineno if any
-        for item in groups:
-            fileitem = os.path.join(self.get_cwd(), item)
-            if os.path.exists(fileitem):
-                filepath = fileitem
-                continue
-            try:
-                int(item)
-            except ValueError:
-                pass
-            else:
-                lineno = item
-        return filepath, lineno
+        group_names = config['groups'].split()
+
+        for group_value, group_name in zip(groups, group_names):
+            if group_name == 'file':
+                filepath = os.path.join(self.get_cwd(), group_value)
+                if not os.path.exists(filepath):
+                    filepath = None
+            elif group_name == 'line':
+                line = group_value
+            elif group_name == 'column':
+                column = group_value
+        return filepath, line, column
 
     def callback(self, strmatch):
-        filepath, lineno = self.get_filepath(strmatch)
-        # Generate the openurl string
-        command = self.config.plugin_get(self.plugin_name, 'command')
-        command = command.replace('{filepath}', filepath)
-        command = command.replace('{line}', lineno)
-        # Check we are opening the file
+        filepath, line, column = self.get_filepath(strmatch)
         if self.open_url():
             if filepath:
+                command = self.config.plugin_get(self.plugin_name, 'command')
+                command = command.replace('{filepath}', filepath)
+                command = command.replace('{line}', line)
+                command = command.replace('{column}', column)
                 subprocess.call(shlex.split(command))
             return '--version'
         return command

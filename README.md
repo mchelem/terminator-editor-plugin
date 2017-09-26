@@ -31,6 +31,8 @@ examples are below:
     command = sublime {filepath}:{line}
 
     command = emacsclient -n +{line} {filepath}
+    
+    command = code --goto {filepath}:{line}:{column}
 
 You can specify the regex to match filenames to your liking.
 

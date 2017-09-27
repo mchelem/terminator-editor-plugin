@@ -44,10 +44,10 @@ File paths with a specified line number (ex: some/file/path.txt:12) **(default)*
 
 ```match = ([^ \t\n\r\f\v:]+?):([0-9]+)```
 
-File paths followed by line number and column:
+File paths followed by line number and, optionally, column:
 
 ```
-match = "([^ \t\n\r\f\v:]+?):([0-9]+):([0-9]+)"
+match = "([^ \t\n\r\f\v:]+?):([0-9]+):?([0-9]+)?"
 groups = "file line column"
 ```
 

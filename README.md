@@ -36,6 +36,12 @@ examples are below:
 
 You can specify the regex to match filenames to your liking.
 
+You can also configure it to open an editor command within the current terminal window (useful for terminal-based editors)
+```
+open_in_current_term = True
+command = vim +{line} {filepath}
+```
+
 #### Regex examples
 
 The inputs to the editor may be specified using the groups parameter. By default the first group matched is the filename and the second is the line number (groups = "file line").

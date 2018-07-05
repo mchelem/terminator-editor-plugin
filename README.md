@@ -34,6 +34,8 @@ examples are below:
     
     command = code --goto {filepath}:{line}:{column}
 
+    command = atom {filepath}:{line}
+
 You can specify the regex to match filenames to your liking.
 
 #### Regex examples

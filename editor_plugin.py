@@ -84,12 +84,12 @@ class EditorPlugin(plugin.URLHandler):
 
     def callback(self, strmatch):
         filepath, line, column = self.get_filepath(strmatch)
-        if self.open_url():
-            if filepath:
-                command = self.config.plugin_get(self.plugin_name, 'command')
-                command = command.replace('{filepath}', filepath)
-                command = command.replace('{line}', line)
-                command = command.replace('{column}', column)
+        if filepath:
+            command = self.config.plugin_get(self.plugin_name, 'command')
+            command = command.replace('{filepath}', filepath)
+            command = command.replace('{line}', line)
+            command = command.replace('{column}', column)
+            if self.open_url():
                 subprocess.call(shlex.split(command))
-            return '--version'
+                return '--version'
         return command

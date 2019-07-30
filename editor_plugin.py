@@ -31,7 +31,8 @@ class EditorPlugin(plugin.URLHandler):
         self.config = config.Config()
         self.check_config()
         self.match = self.config.plugin_get(self.plugin_name, 'match')
-        self.match = self.match.decode('string_escape')
+        if hasattr(self.match, 'decode'):
+            self.match = self.match.decode('string_escape')
 
     def check_config(self):
         config = {

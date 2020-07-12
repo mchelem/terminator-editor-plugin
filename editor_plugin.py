@@ -72,6 +72,15 @@ class EditorPlugin(plugin.URLHandler):
         # the command, we need to climb the stack to see how we got here.
         return inspect.stack()[3][3] == 'open_url'
 
+    def search_filepath_in_libdir(self, group_value):
+        filename = group_value.split('/')[-1]
+        libdir = self.config.plugin_get(self.plugin_name, 'libdir')
+
+        for dirpath, dirnames, filenames in os.walk(os.path.expanduser(libdir)):
+            for name in filenames:
+                if name == filename:
+                    return os.path.join(dirpath, name)
+
     def get_filepath(self, strmatch):
         filepath = None
         line = column = '1'
@@ -85,13 +94,7 @@ class EditorPlugin(plugin.URLHandler):
             if group_name == 'file':
                 filepath = os.path.join(self.get_cwd(), group_value)
                 if not os.path.exists(filepath):
-                    filepath = None
-                    filename = group_value.split('/')[-1]
-                    for r, d, f in os.walk(os.path.expanduser(self.config.plugin_get(self.plugin_name, 'libdir'))):
-                        for file in f:
-                            if filename == file:
-                                filepath = os.path.join(r, file)
-                                break
+                    filepath = self.search_filepath_in_libdir(group_value)
             elif group_name == 'line':
                 line = group_value
             elif group_name == 'column':

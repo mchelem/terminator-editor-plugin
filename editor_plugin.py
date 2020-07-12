@@ -86,6 +86,12 @@ class EditorPlugin(plugin.URLHandler):
                 filepath = os.path.join(self.get_cwd(), group_value)
                 if not os.path.exists(filepath):
                     filepath = None
+                    filename = group_value.split('/')[-1]
+                    for r, d, f in os.walk(os.path.expanduser(self.config.plugin_get(self.plugin_name, 'libdir'))):
+                        for file in f:
+                            if filename == file:
+                                filepath = os.path.join(r, file)
+                                break
             elif group_name == 'line':
                 line = group_value
             elif group_name == 'column':

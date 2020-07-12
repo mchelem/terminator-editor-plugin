@@ -23,15 +23,15 @@ The configuration file is located at `~/.config/terminator/config`. Update
 the command under the `[[EditorPlugin]]` section to suit your needs. A few
 examples are below:
 
-    command = gvim --remote-silent +{line} {filepath} 
+    command = gvim --remote-silent +{line} {filepath}
     command = "gvim --remote-silent +"call cursor({line}, {column})" {filepath}"
 
-    command = gedit +{line} {filepath} 
+    command = gedit +{line} {filepath}
 
     command = sublime {filepath}:{line}
 
     command = emacsclient -n +{line} {filepath}
-    
+
     command = code --goto {filepath}:{line}:{column}
 
     command = atom {filepath}:{line}
@@ -42,6 +42,13 @@ You can also configure it to open an editor command within the current terminal 
 ```
 open_in_current_term = True
 command = vim +{line} {filepath}
+```
+
+If your files are not in the current path but in a specific directory,
+you may use the libdir config.
+
+```
+libdir = ~/libs
 ```
 
 #### Regex examples

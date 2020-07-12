@@ -114,4 +114,4 @@ class EditorPlugin(plugin.URLHandler):
                 else:
                     subprocess.call(shlex.split(command))
                 return '--version'
-        return command
+            return command

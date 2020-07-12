@@ -17,7 +17,10 @@ AVAILABLE = ['EditorPlugin']
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
 DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
 DEFAULT_GROUPS = 'file line'
+DEFAULT_OPEN_IN_CURRENT_TERM = False
 
+def to_bool(val):
+    return val == "True"
 
 class EditorPlugin(plugin.URLHandler):
     """ Process URLs returned by commands. """
@@ -39,23 +42,29 @@ class EditorPlugin(plugin.URLHandler):
             'command': DEFAULT_COMMAND,
             'match': DEFAULT_REGEX,
             'groups': DEFAULT_GROUPS,
+            'open_in_current_term': DEFAULT_OPEN_IN_CURRENT_TERM,
         }
         saved_config = self.config.plugin_get_config(self.plugin_name)
         if saved_config is not None:
             config.update(saved_config)
+        config["open_in_current_term"] = to_bool(config["open_in_current_term"])
         self.config.plugin_set_config(self.plugin_name, config)
         self.config.save()
 
-    def get_cwd(self):
-        """ Return current working directory. """
+    def get_terminal(self):
         # HACK: Because the current working directory is not available to
         # plugins, we need to use the inspect module to climb up the stack to
         # the Terminal object and call get_cwd() from there.
         for frameinfo in inspect.stack():
             frameobj = frameinfo[0].f_locals.get('self')
             if frameobj and frameobj.__class__.__name__ == 'Terminal':
-                return frameobj.get_cwd()
-        return None
+                return frameobj
+
+    def get_cwd(self):
+        """ Return current working directory. """
+        term = self.get_terminal()
+        if term:
+            return term.get_cwd()
 
     def open_url(self):
         """ Return True if we should open the file. """
@@ -91,6 +100,9 @@ class EditorPlugin(plugin.URLHandler):
             command = command.replace('{line}', line)
             command = command.replace('{column}', column)
             if self.open_url():
-                subprocess.call(shlex.split(command))
+                if self.config.plugin_get(self.plugin_name, 'open_in_current_term'):
+                    self.get_terminal().feed(command + '\n')
+                else:
+                    subprocess.call(shlex.split(command))
                 return '--version'
         return command

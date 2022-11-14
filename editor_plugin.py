@@ -112,6 +112,6 @@ class EditorPlugin(plugin.URLHandler):
                 if self.config.plugin_get(self.plugin_name, 'open_in_current_term'):
                     self.get_terminal().feed(command + '\n')
                 else:
-                    subprocess.call(shlex.split(command))
+                    subprocess.Popen(shlex.split(command))
                 return '--version'
             return command

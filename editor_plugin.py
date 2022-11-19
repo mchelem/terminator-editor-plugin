@@ -110,8 +110,8 @@ class EditorPlugin(plugin.URLHandler):
             command = command.replace('{column}', column)
             if self.open_url():
                 if self.config.plugin_get(self.plugin_name, 'open_in_current_term'):
-                    self.get_terminal().feed(command + '\n')
+                    self.get_terminal().vte.feed_child((command+'\n').encode())
                 else:
-                    subprocess.call(shlex.split(command))
+                    subprocess.Popen(shlex.split(command))
                 return '--version'
             return command

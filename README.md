@@ -14,8 +14,20 @@ See the demo at https://github.com/mchelem/terminator-editor-plugin/wiki.
 
 ### Using the Plugin ###
 - Use the grep command (e.g. <code>grep -rn import *.py</code>)
+- Use `git diff` to see changes with clickable file paths
 - Use &lt;ctrl&gt;+click to open the file.
 - Right click to copy the link.
+
+#### Git Diff Support
+The plugin automatically detects git diff output (enabled by default):
+- Click on `--- a/path` or `+++ b/path` lines to open files
+- Click on `@@ -x,y +a,b @@` hunk headers to open files at specific lines
+- File context is tracked across diff sections for accurate line numbers
+
+To disable git diff support:
+```
+git_diff_support = False
+```
 
 
 ### Configuration ###
@@ -28,7 +40,7 @@ examples are below:
 
     command = gedit +{line} {filepath}
 
-    command = sublime {filepath}:{line}
+    command = subl {filepath}:{line}
 
     command = emacsclient -n +{line} {filepath}
 
